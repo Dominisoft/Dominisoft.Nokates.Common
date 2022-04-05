@@ -1,4 +1,4 @@
-name: RunTestCoverage
+name: run_code_analysis
 on:
   push:
     branches:
