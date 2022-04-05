@@ -2,6 +2,16 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp3.1</TargetFramework>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <Company>Dominisoft</Company>
+    <Product>NoKates</Product>
+    <Authors>Dominisoft</Authors>
+    <Description>Common Library to create a microservice to run on a nokates management system</Description>
+    <PackageProjectUrl></PackageProjectUrl>
+    <PackageIcon>101290651[1].png</PackageIcon>
+    <RepositoryUrl>https://github.com/Dominisoft/Dominisoft.Nokates.Common</RepositoryUrl>
+    <PackageLicenseExpression>GPL-3.0-or-later</PackageLicenseExpression>
+    <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
   </PropertyGroup>
 
 	<ItemGroup>

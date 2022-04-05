@@ -6,7 +6,8 @@ namespace Dominisoft.Nokates.Common.Models
     {
         public string Name { get; set; }
         public DateTime StartTime { get; set; }
-        public bool IsOnline { get; set; } = true;
+        public bool IsOnline { get; set; }
+        public DeploymentStatus DeploymentStatus { get; set; }
         public string Uri { get; set; }
         public VersionDetails Version { get; set; }
     }
