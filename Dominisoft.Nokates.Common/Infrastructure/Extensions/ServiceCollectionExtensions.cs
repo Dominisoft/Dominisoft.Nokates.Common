@@ -45,7 +45,8 @@ namespace Dominisoft.Nokates.Common.Infrastructure.Extensions
                 StartTime = DateTime.Now,
                 Name = AppHelper.GetAppName(),
                 Uri = AppHelper.GetAppUri() + "ServiceStatus",
-                Version = AppHelper.GetVersionDetails()
+                Version = AppHelper.GetVersionDetails(),
+                DeploymentStatus = DeploymentStatus.DeploymentCompleted
             };
             StatusValues.Log("Nokates Service configured");
 
