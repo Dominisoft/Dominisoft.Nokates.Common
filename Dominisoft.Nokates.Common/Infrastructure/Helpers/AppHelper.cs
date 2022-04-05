@@ -23,7 +23,7 @@ namespace Dominisoft.Nokates.Common.Infrastructure.Helpers
             var apps = GetApps();
             if (AppDomain.CurrentDomain.BaseDirectory == null) return _appName;
             var exeDir = Environment.ExpandEnvironmentVariables(AppDomain.CurrentDomain.BaseDirectory);
-            var dirs = apps.SelectMany(a => a.VirtualDirectories.Select(d => Environment.ExpandEnvironmentVariables(d.PhysicalPath))).ToList();
+            //var dirs = apps.SelectMany(a => a.VirtualDirectories.Select(d => Environment.ExpandEnvironmentVariables(d.PhysicalPath))).ToList();
             var app = apps.FirstOrDefault(app => app.VirtualDirectories.Any(dir => dir.PhysicalPath + "\\" == exeDir));
 
             _appName= app?.ApplicationPoolName ?? "Unknown Service";

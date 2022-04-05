@@ -13,12 +13,12 @@ namespace Dominisoft.Nokates.Common.Infrastructure.Middleware
     public class AuthorizationMiddleware
     {
         private readonly RequestDelegate _next;
-        private List<EndpointDataSource> _endpointSources;
+        private readonly List<EndpointDataSource> _endpointSources;
 
         public AuthorizationMiddleware(RequestDelegate next, IEnumerable<EndpointDataSource> endpointSources)
         {
             _next = next;
-            this._endpointSources = endpointSources.ToList();
+            _endpointSources = endpointSources.ToList();
         }
 
 
@@ -36,13 +36,12 @@ namespace Dominisoft.Nokates.Common.Infrastructure.Middleware
                     await _next(context);
                     return;
                 }
-                context.Response.StatusCode = 404;
+                context.Response.StatusCode = 502;
                 await context.Response.WriteAsync($"Unable to find Endpoint \"{context.Request.Path}\" for authorization");
                 return;
             }
 
             context.Items.Add("EndpointAuthorizationDetails", endpoint);
-
 
             if (endpoint.HasNoAuthAttribute)
             {
@@ -50,14 +49,11 @@ namespace Dominisoft.Nokates.Common.Infrastructure.Middleware
                 return;
             }
 
-
-
             var endpointKey = $"{AppHelper.GetAppName()}:{endpoint.Action}";
 
             CheckAccess(context, endpointKey);
-            
 
-                await _next(context);                
+            await _next(context);                
         }
 
         private EndpointDescription GetEndpoint(HttpContext context)
@@ -67,7 +63,7 @@ namespace Dominisoft.Nokates.Common.Infrastructure.Middleware
             return endpoint;
         }
 
-        private void CheckAccess(HttpContext context, string permission)
+        private static void CheckAccess(HttpContext context, string permission)
         {
            
             var claims = context.User.Claims.ToList();
@@ -75,7 +71,7 @@ namespace Dominisoft.Nokates.Common.Infrastructure.Middleware
             if (claims.Any(c => c.Type == "role_name" && c.Value.Trim() == "Admin"))
                 return;
             var c = string.Join(',', claims.Select(cc => $"{cc.Type}:{cc.Value}"));
-            var key = "endpoint_permission";
+            const string key = "endpoint_permission";
 
             var effectivePermissions = claims.Where(c => c.Type == key).Select(c => c.Value).ToList();           
 

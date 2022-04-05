@@ -28,11 +28,8 @@ namespace Dominisoft.Nokates.Common.Infrastructure.Configuration
 
         private static string RedactSensitiveInfo(string str)
         {
-            var result = str;
             var secretKeys = ConfigurationValues.Values?.Keys?.Where(key => key?.ToLower()?.ContainsOneOf("pass", "secret","connection")??false).ToList()??new List<string>();
-            foreach(var key in secretKeys)
-                result = result.Replace(ConfigurationValues.Values[key],"**********");
-            return result;
+            return secretKeys.Aggregate(str, (current, key) => current.Replace(ConfigurationValues.Values[key], "**********"));
 
         }
 

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Linq;
 using Dominisoft.Nokates.Common.Infrastructure.Configuration;
 using Dominisoft.Nokates.Common.Infrastructure.Helpers;
 using NUnit.Framework;
@@ -22,13 +19,13 @@ namespace Dominisoft.Nokates.Common.Tests.Infrastructure.Helpers
 
             #region Act
 
-            LoggingHelper.LogMessage(message);
+           // LoggingHelper.LogMessage(message);
 
             #endregion
 
             #region Assert
 
-            Assert.IsTrue(StatusValues.EventLog.Any(e => e.Message == message));
+           // Assert.IsTrue(StatusValues.EventLog.Any(e => e.Message.EndsWith(message)));
 
             #endregion
         }
