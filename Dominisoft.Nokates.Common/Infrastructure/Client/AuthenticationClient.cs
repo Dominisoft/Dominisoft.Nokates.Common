@@ -3,6 +3,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Dominisoft.Nokates.Common.Infrastructure.Extensions;
+using Dominisoft.Nokates.Common.Infrastructure.Helpers;
 
 namespace Dominisoft.Nokates.Common.Infrastructure.Client
 {
@@ -23,15 +24,9 @@ namespace Dominisoft.Nokates.Common.Infrastructure.Client
       { "Username", user },
       { "EncryptedPassword", pass}
   };
+            var response = await HttpHelper.Post(_authenticationUrl, values.Serialize(), string.Empty);
 
-            var content = new StringContent(values.Serialize(), Encoding.UTF8, "application/json");
-
-            var client = new HttpClient();
-
-            var response = await client.PostAsync(_authenticationUrl, content);
-
-            var responseString = await response.Content.ReadAsStringAsync();
-            return responseString.Trim('"');
+            return response.Trim('"');
         }
     }
 }

@@ -3,12 +3,15 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using Dominisoft.Nokates.Common.Infrastructure.Configuration;
+using Dominisoft.Nokates.Common.Infrastructure.Extensions;
 using Dominisoft.Nokates.Common.Infrastructure.Helpers;
 using Dominisoft.Nokates.Common.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Primitives;
+using Newtonsoft.Json;
 
 namespace Dominisoft.Nokates.Common.Infrastructure.Middleware
 {
@@ -43,6 +46,23 @@ namespace Dominisoft.Nokates.Common.Infrastructure.Middleware
             //...and use that for the temporary response body
             context.Response.Body = responseBody;
 
+            var requestTrackingId = Guid.NewGuid();
+
+
+            if (context.Request.Headers.ContainsKey("RequestTrackingId")
+                && Guid.TryParse(context.Request.Headers["RequestTrackingId"], out var id))
+                requestTrackingId = id;
+
+
+            var requestSource = context.Request.Headers.ContainsKey("RequestTrackingSource")?
+                 context.Request.Headers["RequestTrackingSource"][0] : "External";
+            
+            var remoteIpAddress = context.Connection.RemoteIpAddress;
+
+
+
+            Thread.CurrentThread.SetRequestId(requestTrackingId);
+
             //Continue down the Middleware pipeline, eventually returning to this class
             await _next(context);
 
@@ -55,6 +75,9 @@ namespace Dominisoft.Nokates.Common.Infrastructure.Middleware
             var designation = endpointAuthDetails==null?"":$"{AppHelper.GetAppName()}:{endpointAuthDetails.Action}";
             var logRecord = new RequestMetric
             {
+                RequestTrackingId = requestTrackingId,
+                RequestSource = requestSource,
+                RemoteIp = remoteIpAddress?.ToString(),
                 RequestJson = request,
                 ServiceName = AppHelper.GetAppName(),
                 RequestPath = context.Request.Path,
@@ -82,7 +105,7 @@ namespace Dominisoft.Nokates.Common.Infrastructure.Middleware
 
             //This line allows us to set the reader for the request back at the beginning of its stream.
             request.EnableBuffering();
-            var headers = request.Headers.Aggregate(string.Empty, (current, keyValuePair) => current + $"'{keyValuePair.Key}' : '{keyValuePair.Value}'\r\n");
+           // var headers = request.Headers.Aggregate(string.Empty, (current, keyValuePair) => current + $"'{keyValuePair.Key}' : '{keyValuePair.Value}'\r\n");
             //We now need to read the request stream.  First, we create a new byte[] with the same length as the request stream...
             var buffer = new byte[Convert.ToInt32(request.ContentLength)];
             var stream = new MemoryStream(buffer);
@@ -92,10 +115,32 @@ namespace Dominisoft.Nokates.Common.Infrastructure.Middleware
             //We convert the byte[] into a string using UTF8 encoding...
             var bodyAsText = Encoding.UTF8.GetString(buffer);
 
+            var remoteIpAddress = request.HttpContext.Connection.RemoteIpAddress;
+
+
             //..and finally, assign the read body back to the request body, which is allowed because of EnableBuffering()
+
+
+
+            var requestString =  JsonConvert.SerializeObject(new
+                {
+                    request.Method,
+                    request.Scheme,
+                    request.Host,
+                    request.Path,
+                    request.QueryString,
+                    request.Headers,
+                    request.ContentType,
+                    SourceIp = remoteIpAddress?.ToString(),
+                    bodyAsText,
+
+                },
+                Formatting.Indented);
+
             request.Body.Position = 0;
 
-            return $"{request.Scheme} {request.Host}{request.Path} {request.QueryString}\r\nHeaders:\r\n{headers}\r\nBody:\r\n {bodyAsText}";
+            return requestString;
+
         }
         private async Task<string> FormatRequestForm(HttpRequest request)
         {
@@ -127,9 +172,9 @@ namespace Dominisoft.Nokates.Common.Infrastructure.Middleware
 
             //We need to reset the reader for the response so that the client can read it.
             response.Body.Seek(0, SeekOrigin.Begin);
-
+            
             //Return the string for the response, including the status code (e.g. 200, 404, 401, etc.)
-            return $"{response.StatusCode}: {text}";
+            return text;
         }
 
         private void LogTransaction(RequestMetric request) 

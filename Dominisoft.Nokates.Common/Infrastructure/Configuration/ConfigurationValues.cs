@@ -38,6 +38,7 @@ namespace Dominisoft.Nokates.Common.Infrastructure.Configuration
         private static string SetToken()
         {
             TryGetValue(out var authorizationEndpointUrl, "AuthorizationURL");
+            authorizationEndpointUrl = "http://DevAppServer/Identity/Authentication";
             var authClient = new AuthenticationClient(authorizationEndpointUrl);
             TryGetValue(out var serviceAccountUsername, "ServiceAccountUsername");
             TryGetValue(out var serviceAccountPassword, "ServiceAccountPassword");
@@ -59,7 +60,7 @@ namespace Dominisoft.Nokates.Common.Infrastructure.Configuration
             var configUri = $"{AppHelper.GetRootUri()}{configServiceName}/{AppHelper.GetAppName()}";
             if (debugMode)
                 StatusValues.Log("Config Path:" + configUri);
-            JsonConfig = await GetConfig(configUri);
+            JsonConfig = GetConfig(configUri);
             if (JsonConfig.StartsWith("User does not have permission for endpoint"))
             {
                 if (debugMode)
@@ -68,26 +69,12 @@ namespace Dominisoft.Nokates.Common.Infrastructure.Configuration
             }
             Values = JsonConvert.DeserializeObject<Dictionary<string, string>>(JsonConfig);
         }
-        private static Task<string> GetConfig(string url)
+        private static string GetConfig(string url)
         {
-            var json = "";
-            var client = new HttpClient();
-            var request = new HttpRequestMessage()
-            {
-                RequestUri = new Uri(url),
-                Method = HttpMethod.Get,
-            };
-
-            request.Headers.Add("Authorization", $"Bearer {Token}");
-            var task = client.SendAsync(request)
-                .ContinueWith((requestTask) =>
-                {
-                    var response = requestTask.Result;
-                    json = response.Content.ReadAsStringAsync().Result;
-                });
-            task.Wait();
-            return Task.FromResult(json);
+            return HttpHelper.Get(url, Token);
+            
         }
+
 
         internal static void LoadConfigFromFile(string path)
         {

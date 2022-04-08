@@ -8,10 +8,13 @@
     <Authors>Dominisoft</Authors>
     <Description>Common Library to create a microservice to run on a nokates management system</Description>
     <PackageProjectUrl></PackageProjectUrl>
-    <PackageIcon>101290651[1].png</PackageIcon>
+    <PackageIcon></PackageIcon>
     <RepositoryUrl>https://github.com/Dominisoft/Dominisoft.Nokates.Common</RepositoryUrl>
     <PackageLicenseExpression>GPL-3.0-or-later</PackageLicenseExpression>
     <PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
+    <AssemblyVersion>1.0.4</AssemblyVersion>
+    <FileVersion>1.0.4</FileVersion>
+    <Version>1.0.4</Version>
   </PropertyGroup>
 
 	<ItemGroup>

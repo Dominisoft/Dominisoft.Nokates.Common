@@ -3,6 +3,9 @@ using System.Net;
 using System.Net.Http;
 using System.Security.Authentication;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using Dominisoft.Nokates.Common.Infrastructure.Extensions;
 using Newtonsoft.Json;
 
 namespace Dominisoft.Nokates.Common.Infrastructure.Helpers
@@ -10,6 +13,12 @@ namespace Dominisoft.Nokates.Common.Infrastructure.Helpers
     public static class HttpHelper
     {
         public static TReturn Get<TReturn>(string path, string token)
+        {
+            var json = Get(path,token);
+            
+            return JsonConvert.DeserializeObject<TReturn>(json);
+        }
+        public static string Get(string path, string token)
         {
             var json = "";
             var client = new HttpClient();
@@ -19,6 +28,7 @@ namespace Dominisoft.Nokates.Common.Infrastructure.Helpers
                 Method = HttpMethod.Get,
             };
             request.Headers.Add("Authorization", $"Bearer {token}");
+            AddRequestTrackingInfoToRequest(ref request);
             var task = client.SendAsync(request)
                 .ContinueWith((taskwithmsg) =>
                 {
@@ -28,7 +38,7 @@ namespace Dominisoft.Nokates.Common.Infrastructure.Helpers
                     json = response.Content.ReadAsStringAsync().Result;
                 });
             task.Wait();
-            return JsonConvert.DeserializeObject<TReturn>(json);
+            return json;
         }
         public static TReturn Post<TReturn>(string path, string body, string token)
         {
@@ -44,6 +54,7 @@ namespace Dominisoft.Nokates.Common.Infrastructure.Helpers
 
             };
             request.Headers.Add("Authorization", $"Bearer {token}");
+            AddRequestTrackingInfoToRequest(ref request);
             var task = client.SendAsync(request)
                 .ContinueWith((taskwithmsg) =>
                 {
@@ -54,7 +65,7 @@ namespace Dominisoft.Nokates.Common.Infrastructure.Helpers
             return JsonConvert.DeserializeObject<TReturn>(json);
         }
 
-        public static void Post(string path, string body, string token)
+        public static async Task<string> Post(string path, string body, string token)
         {
             var client = new HttpClient();
             var content = new StringContent(body, Encoding.UTF8, "application/json");
@@ -66,13 +77,53 @@ namespace Dominisoft.Nokates.Common.Infrastructure.Helpers
                 Content = content,
 
             };
+            
+            if (!string.IsNullOrWhiteSpace(token))
             request.Headers.Add("Authorization", token);
+
+            AddRequestTrackingInfoToRequest(ref request);
+
             var task = client.SendAsync(request)
-                .ContinueWith((taskwithmsg) =>
+                .ContinueWith(taskwithmsg
+                    =>
                 {
-                    var response = taskwithmsg.Result;
+                    var t2 = taskwithmsg.Result.Content.ReadAsStringAsync()
+                        .ContinueWith(r => r.Result);
+                    t2.Wait();
+                    return t2.Result;
                 });
             task.Wait();
+
+            string r = task.Result;
+
+            return r;
+            //var task = client.SendAsync(request)
+            //    .ContinueWith((taskwithmsg) =>
+            //    {
+            //        var response = taskwithmsg.Result;
+            //        return response;
+            //    });
+            //task.Wait();
+
+            //var task2 = task.Result.Content.ReadAsStringAsync();
+
+            //task2.ContinueWith(r => r);
+
+            //task2.Wait();
+
+
+            //return task2.Result;
+        }
+
+        private static void AddRequestTrackingInfoToRequest(ref HttpRequestMessage request)
+        {
+            var appName = AppHelper.GetAppName();
+            var requestId = Thread.CurrentThread.GetRequestId();
+            if (requestId==Guid.Empty) 
+                requestId = Guid.NewGuid();
+            request.Headers.Add("RequestTrackingId",requestId.ToString() );
+            request.Headers.Add("RequestTrackingSource",appName );
+
         }
     }
 }

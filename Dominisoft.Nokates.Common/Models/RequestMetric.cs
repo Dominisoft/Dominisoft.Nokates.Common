@@ -4,6 +4,7 @@ namespace Dominisoft.Nokates.Common.Models
 {
     public class RequestMetric:Entity
     {
+        public Guid RequestTrackingId { get; set; }
         public string RequestType { get; set; }
         public string ServiceName { get; set; }
         public string RequestPath { get; set; }
@@ -17,5 +18,7 @@ namespace Dominisoft.Nokates.Common.Models
         /// </summary>
         public long ResponseTime { get; set; }
 
+        public string RequestSource { get; set; }
+        public string RemoteIp { get; set; }
     }
 }
