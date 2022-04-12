@@ -80,7 +80,7 @@ namespace Dominisoft.Nokates.Common.Infrastructure.Middleware
                 RemoteIp = remoteIpAddress?.ToString(),
                 RequestJson = request,
                 ServiceName = AppHelper.GetAppName(),
-                RequestPath = context.Request.Path,
+                RequestPath = context.Request.Path+context.Request.QueryString,
                 RequestType = context.Request.Method,
                 ResponseCode = context.Response.StatusCode,
                 ResponseJson = response,
@@ -115,31 +115,9 @@ namespace Dominisoft.Nokates.Common.Infrastructure.Middleware
             //We convert the byte[] into a string using UTF8 encoding...
             var bodyAsText = Encoding.UTF8.GetString(buffer);
 
-            var remoteIpAddress = request.HttpContext.Connection.RemoteIpAddress;
-
-
-            //..and finally, assign the read body back to the request body, which is allowed because of EnableBuffering()
-
-
-
-            var requestString =  JsonConvert.SerializeObject(new
-                {
-                    request.Method,
-                    request.Scheme,
-                    request.Host,
-                    request.Path,
-                    request.QueryString,
-                    request.Headers,
-                    request.ContentType,
-                    SourceIp = remoteIpAddress?.ToString(),
-                    bodyAsText,
-
-                },
-                Formatting.Indented);
-
             request.Body.Position = 0;
 
-            return requestString;
+            return bodyAsText;
 
         }
         private async Task<string> FormatRequestForm(HttpRequest request)

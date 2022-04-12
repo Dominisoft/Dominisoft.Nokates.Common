@@ -15,18 +15,21 @@ namespace Dominisoft.Nokates.Common.Infrastructure.Helpers
 {
     public static class AppHelper
     {
+        private const string UnknownName = "Unknown Service";
         private static string _appName;
         public static string GetAppName()
         {
             if (!string.IsNullOrEmpty(_appName))
                 return _appName;
             var apps = GetApps();
+            if (apps == null)
+                return UnknownName;
             if (AppDomain.CurrentDomain.BaseDirectory == null) return _appName;
             var exeDir = Environment.ExpandEnvironmentVariables(AppDomain.CurrentDomain.BaseDirectory);
             //var dirs = apps.SelectMany(a => a.VirtualDirectories.Select(d => Environment.ExpandEnvironmentVariables(d.PhysicalPath))).ToList();
             var app = apps.FirstOrDefault(app => app.VirtualDirectories.Any(dir => dir.PhysicalPath + "\\" == exeDir));
 
-            _appName= app?.ApplicationPoolName ?? "Unknown Service";
+            _appName= app?.ApplicationPoolName ?? UnknownName;
 
             return _appName;
         }
@@ -54,7 +57,7 @@ namespace Dominisoft.Nokates.Common.Infrastructure.Helpers
                     var controllerMethod = controller != null
                         ? $"{controller?.ControllerTypeInfo?.FullName}.{controller?.MethodInfo?.Name}"
                         : null;
-                    var hasNoAuth = controller?.EndpointMetadata?.Any(m => m?.GetType() == typeof(NoAuth))??false;
+                    var hasNoAuth = controller?.EndpointMetadata?.Any(m => m?.GetType() == typeof(NoAuth)) ??false;
                     return new EndpointDescription
                     {
                         Method = e.Metadata.OfType<HttpMethodMetadata>().FirstOrDefault()?.HttpMethods?[0],
@@ -123,16 +126,6 @@ namespace Dominisoft.Nokates.Common.Infrastructure.Helpers
             if (endpoint != null)
             return endpoint;
 
-            ConfigurationValues.TryGetValue(out bool debugMode, "DebugMode");
-
-            if (!debugMode) return null;
-            {
-                var log = $"Unable to find endpoint for {path}\r\nAvailable Routes:";
-                log = endpoints.Aggregate(log, (current, e) => current + $"{e.Route}\r\n");
-
-                StatusValues.Log(log);
-            }
-
 
             return null;
         }
@@ -161,12 +154,21 @@ namespace Dominisoft.Nokates.Common.Infrastructure.Helpers
 
         public static ApplicationCollection GetApps()
         {
-            var serverManager = new ServerManager();
-            var sites = serverManager.Sites;
-            var maxCount = sites.Select(s => s.Applications.Count).Max();
-            var site = sites.FirstOrDefault(s => s.Applications.Count == maxCount);
-            var apps = site?.Applications;
-            return apps;
+            try
+            {
+                var serverManager = new ServerManager();
+                var sites = serverManager.Sites;
+                var maxCount = sites.Select(s => s.Applications.Count).Max();
+                var site = sites.FirstOrDefault(s => s.Applications.Count == maxCount);
+                var apps = site?.Applications;
+                return apps;
+            }
+            catch (Exception )
+            {
+                return null;
+            }
+
+
 
         }
         public static string GetRootUri()

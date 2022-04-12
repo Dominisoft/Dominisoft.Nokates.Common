@@ -1,7 +1,9 @@
 ﻿using System;
+using Dominisoft.Nokates.Common.Infrastructure.Attributes;
 
 namespace Dominisoft.Nokates.Common.Models
 {
+    [DefaultConnectionString("Metrics")]
     public class RequestMetric:Entity
     {
         public Guid RequestTrackingId { get; set; }

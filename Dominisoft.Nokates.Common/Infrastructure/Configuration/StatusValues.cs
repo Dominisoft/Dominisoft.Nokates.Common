@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using Dominisoft.Nokates.Common.Infrastructure.Extensions;
 using Dominisoft.Nokates.Common.Infrastructure.Helpers;
 using Dominisoft.Nokates.Common.Models;
 
@@ -28,8 +27,9 @@ namespace Dominisoft.Nokates.Common.Infrastructure.Configuration
 
         private static string RedactSensitiveInfo(string str)
         {
-            var secretKeys = ConfigurationValues.Values?.Keys?.Where(key => key?.ToLower()?.ContainsOneOf("pass", "secret","connection")??false).ToList()??new List<string>();
-            return secretKeys.Aggregate(str, (current, key) => current.Replace(ConfigurationValues.Values[key], "**********"));
+    //        var secretKeys = ConfigurationValues.Values?.Keys?.Where(key => key?.ToLower()?.ContainsOneOf("pass", "secret","connection")??false).ToList()??new List<string>();
+    //        return secretKeys.Aggregate(str, (current, key) => current.Replace(ConfigurationValues.Values[key], "**********"));
+    return str;
 
         }
 

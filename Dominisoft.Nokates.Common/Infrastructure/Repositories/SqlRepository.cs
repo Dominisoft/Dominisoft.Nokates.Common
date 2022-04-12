@@ -1,7 +1,11 @@
 ﻿using Dapper.Contrib.Extensions;
 using System.Data.SqlClient;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
+using Dapper;
+using Dominisoft.Nokates.Common.Infrastructure.Helpers;
+using Dominisoft.Nokates.Common.Infrastructure.Mapper;
 using Dominisoft.Nokates.Common.Models;
 
 
@@ -19,7 +23,11 @@ namespace Dominisoft.Nokates.Common.Infrastructure.Repositories
 
         public long Create(TEntity entity)
         {
-            var id = _connection.Insert(entity);            
+            
+            var sqlParams = CustomSqlMapper.ReverseMap(entity);
+            var table = entity.GetTableName();
+            var sqlStatement = SqlGenerator.GetInsertStatement(table, sqlParams);
+            var id = SqlMapper.QueryFirstOrDefault<int>(_connection, sqlStatement, sqlParams, commandType:CommandType.Text);        
             return id;
         }
 

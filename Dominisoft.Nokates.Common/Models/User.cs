@@ -1,5 +1,8 @@
-﻿namespace Dominisoft.Nokates.Common.Models
+﻿using Dominisoft.Nokates.Common.Infrastructure.Attributes;
+
+namespace Dominisoft.Nokates.Common.Models
 {
+    [DefaultConnectionString("Identity")]
     public class User:Entity
     {
         public string FirstName { get; set; }

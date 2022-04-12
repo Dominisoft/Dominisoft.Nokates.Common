@@ -4,6 +4,8 @@ using System.Linq;
 
 namespace Dominisoft.Nokates.Common.Infrastructure.Attributes
 {
+
+    [AttributeUsage(AttributeTargets.Method)]
     public class EndpointGroup : Attribute
     {
         public EndpointGroup(params string[] groups)

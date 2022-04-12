@@ -17,17 +17,15 @@ namespace Dominisoft.Nokates.Common.Infrastructure.Extensions
     {
         public static IServiceCollection AddNokates(this IServiceCollection services, string configurationAppName = "Configuration", string configFile = null)
         {
+            var token = ConfigurationValues.Token;
             if (string.IsNullOrWhiteSpace(configFile))
             {
-                ConfigurationValues.LoadConfig(configurationAppName).Wait();
-                StatusValues.Log("Configuration Downloaded: " + ConfigurationValues.JsonConfig);
-
+                ConfigurationValues.LoadConfig(configurationAppName);
             }
             else
             {
                 ConfigurationValues.LoadConfigFromFile(configFile);
-                StatusValues.Log("Configuration loaded from file: " + ConfigurationValues.JsonConfig);
-            }
+              }
             EventRecorder.Start();
 
             services.SetupJwtServices();

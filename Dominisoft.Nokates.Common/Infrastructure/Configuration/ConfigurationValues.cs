@@ -31,48 +31,44 @@ namespace Dominisoft.Nokates.Common.Infrastructure.Configuration
                 value = string.Empty;
                 return false;
             }
-            value = Values[variableName];
+            value = Values[variableName].ToString();
             return true;
 
         }
+        private const string UserName = "ServiceLogin";
+        private const string Password = "asdf";
+        private const string authUrl = "http://DevAppServer/Identity/Authentication";
         private static string SetToken()
         {
-            TryGetValue(out var authorizationEndpointUrl, "AuthorizationURL");
-            authorizationEndpointUrl = "http://DevAppServer/Identity/Authentication";
-            var authClient = new AuthenticationClient(authorizationEndpointUrl);
-            TryGetValue(out var serviceAccountUsername, "ServiceAccountUsername");
-            TryGetValue(out var serviceAccountPassword, "ServiceAccountPassword");
-            //TODO: Remove this and find a way to get initial service account to download config
-            serviceAccountUsername = "ServiceLogin";
-            serviceAccountPassword = "ServicePassword";
+            //TryGetValue(out var authorizationEndpointUrl, "AuthorizationURL");
+            //authorizationEndpointUrl = "http://DevAppServer/Identity/Authentication";
+            //var authClient = new AuthenticationClient(authorizationEndpointUrl);
+            //TryGetValue(out var serviceAccountUsername, "ServiceAccountUsername");
+            //TryGetValue(out var serviceAccountPassword, "ServiceAccountPassword");
+            ////TODO: Remove this and find a way to get initial service account to download config
+            //serviceAccountUsername = "ServiceLogin";
+            //serviceAccountPassword = "ServicePassword";
+            var authClient = new AuthenticationClient(authUrl);
 
-            _token = Task.Run(() => authClient.GetToken(serviceAccountUsername,serviceAccountPassword)).Result;
+            var token = authClient.GetToken(UserName, Password);
+            _token = token;
+           // _token = authClient.GetToken(serviceAccountUsername, serviceAccountPassword);
             if (_token != null) return _token;
 
             StatusValues.Log("Unable to get token");
-            return "{}";
+            return "No_Token";
         }
 
      
-        internal static async Task LoadConfig(string configServiceName)
+        internal static void LoadConfig(string configServiceName)
         {
-            TryGetValue(out bool debugMode, "DebugMode");
             var configUri = $"{AppHelper.GetRootUri()}{configServiceName}/{AppHelper.GetAppName()}";
-            if (debugMode)
-                StatusValues.Log("Config Path:" + configUri);
-            JsonConfig = GetConfig(configUri);
-            if (JsonConfig.StartsWith("User does not have permission for endpoint"))
-            {
-                if (debugMode)
-                    StatusValues.Log(JsonConfig);
-                return;
-            }
-            Values = JsonConvert.DeserializeObject<Dictionary<string, string>>(JsonConfig);
+            LoadConfigFromUrl(configUri);
         }
-        private static string GetConfig(string url)
+        private static void GetConfig(string url)
         {
-            return HttpHelper.Get(url, Token);
-            
+            JsonConfig = HttpHelper.Get(url, string.Empty);
+            Values = JsonConvert.DeserializeObject<Dictionary<string, string>>(JsonConfig);
         }
 
 
@@ -81,6 +77,11 @@ namespace Dominisoft.Nokates.Common.Infrastructure.Configuration
 
             JsonConfig = File.ReadAllText(path);
             Values = JsonConvert.DeserializeObject<Dictionary<string, string>>(JsonConfig);
+        }
+
+        public static void LoadConfigFromUrl(string configUri)
+        {
+            GetConfig(configUri);
         }
     }
 }

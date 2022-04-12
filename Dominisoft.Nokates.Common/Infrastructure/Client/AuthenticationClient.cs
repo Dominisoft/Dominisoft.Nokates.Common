@@ -16,7 +16,7 @@ namespace Dominisoft.Nokates.Common.Infrastructure.Client
             _authenticationUrl = authenticationUrl;
         }
 
-        public async Task<string> GetToken(string user, string pass)
+        public string GetToken(string user, string pass)
         {
 
             var values = new Dictionary<string, string>
@@ -24,9 +24,9 @@ namespace Dominisoft.Nokates.Common.Infrastructure.Client
       { "Username", user },
       { "EncryptedPassword", pass}
   };
-            var response = await HttpHelper.Post(_authenticationUrl, values.Serialize(), string.Empty);
+            var response = HttpHelper.Post(_authenticationUrl, values, string.Empty);
 
-            return response.Trim('"');
+            return response?.Split('.').Length != 3 ? null : response.Trim('"');
         }
     }
 }
