@@ -1,17 +1,13 @@
-﻿using Dapper.Contrib.Extensions;
-using System.Data.SqlClient;
+﻿using System.Data.SqlClient;
 using System.Collections.Generic;
-using System.Data;
 using System.Linq;
-using Dapper;
-using Dominisoft.Nokates.Common.Infrastructure.Helpers;
-using Dominisoft.Nokates.Common.Infrastructure.Mapper;
 using Dominisoft.Nokates.Common.Models;
+using Dominisoft.SqlBuilder;
 
 
 namespace Dominisoft.Nokates.Common.Infrastructure.Repositories
 {
-    public class SqlRepository<TEntity> where TEntity : Entity
+    public class SqlRepository<TEntity> where TEntity : Entity, new()
     {
         private readonly SqlConnection _connection;
 
@@ -21,35 +17,32 @@ namespace Dominisoft.Nokates.Common.Infrastructure.Repositories
         }
 
 
-        public long Create(TEntity entity)
+        public int Create(TEntity entity)
         {
-            
-            var sqlParams = CustomSqlMapper.ReverseMap(entity);
-            var table = entity.GetTableName();
-            var sqlStatement = SqlGenerator.GetInsertStatement(table, sqlParams);
-            var id = SqlMapper.QueryFirstOrDefault<int>(_connection, sqlStatement, sqlParams, commandType:CommandType.Text);        
+
+            var id = _connection.Insert(entity);  
             return id;
         }
 
 
-        public TEntity Get(long id)
+        public TEntity Get(int id)
         {
-            return _connection.Get<TEntity>(id);
+            var e = new TEntity {Id = id};
+            return _connection.Get(e);
         }
         public List<TEntity> GetAll()
         {
-            return _connection.GetAll<TEntity>().ToList();
+            return _connection.GetAll<TEntity>();
         }
         public TEntity Update(TEntity entity)
         {
-            var id = entity.Id;
             _connection.Update(entity);
-            return _connection.Get<TEntity>(id);
+            return _connection.Get(entity);
         }
         public bool Delete(TEntity entity)
         {
             var removed =  _connection.Delete(entity);
-            return removed;
+            return removed>0;
         }
 
     }

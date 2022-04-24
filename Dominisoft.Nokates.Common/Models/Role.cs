@@ -1,8 +1,10 @@
-﻿using Dominisoft.Nokates.Common.Infrastructure.Attributes;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using Dominisoft.Nokates.Common.Infrastructure.Attributes;
 
 namespace Dominisoft.Nokates.Common.Models
 {
     [DefaultConnectionString("Identity")]
+    [Table("Roles")]
 
     public class Role: Entity
     {

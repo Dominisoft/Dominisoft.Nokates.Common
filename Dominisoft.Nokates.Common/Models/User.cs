@@ -1,8 +1,11 @@
-﻿using Dominisoft.Nokates.Common.Infrastructure.Attributes;
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using Dominisoft.Nokates.Common.Infrastructure.Attributes;
 
 namespace Dominisoft.Nokates.Common.Models
 {
     [DefaultConnectionString("Identity")]
+    [Table("Users")]
+
     public class User:Entity
     {
         public string FirstName { get; set; }

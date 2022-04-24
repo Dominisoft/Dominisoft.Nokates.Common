@@ -35,24 +35,15 @@ namespace Dominisoft.Nokates.Common.Infrastructure.Configuration
             return true;
 
         }
-        private const string UserName = "ServiceLogin";
-        private const string Password = "asdf";
-        private const string authUrl = "http://DevAppServer/Identity/Authentication";
+
         private static string SetToken()
         {
-            //TryGetValue(out var authorizationEndpointUrl, "AuthorizationURL");
-            //authorizationEndpointUrl = "http://DevAppServer/Identity/Authentication";
-            //var authClient = new AuthenticationClient(authorizationEndpointUrl);
-            //TryGetValue(out var serviceAccountUsername, "ServiceAccountUsername");
-            //TryGetValue(out var serviceAccountPassword, "ServiceAccountPassword");
-            ////TODO: Remove this and find a way to get initial service account to download config
-            //serviceAccountUsername = "ServiceLogin";
-            //serviceAccountPassword = "ServicePassword";
-            var authClient = new AuthenticationClient(authUrl);
 
-            var token = authClient.GetToken(UserName, Password);
+            var authClient = new AuthenticationClient(Values["AuthenticationUrl"]);
+
+            var token = authClient.GetToken(Values["ServiceUsername"], Values["ServicePassword"]);
             _token = token;
-           // _token = authClient.GetToken(serviceAccountUsername, serviceAccountPassword);
+
             if (_token != null) return _token;
 
             StatusValues.Log("Unable to get token");

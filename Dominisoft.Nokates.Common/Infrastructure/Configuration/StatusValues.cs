@@ -36,7 +36,7 @@ namespace Dominisoft.Nokates.Common.Infrastructure.Configuration
         internal static void LogRequestAndResponse(RequestMetric request)
         {
             var path = request.RequestPath;
-            if (path.ToLower().StartsWith("/nokates")) return;
+          //  if (path.ToLower().StartsWith("/nokates")) return;
             RequestMetrics.Add(request);
 
         }

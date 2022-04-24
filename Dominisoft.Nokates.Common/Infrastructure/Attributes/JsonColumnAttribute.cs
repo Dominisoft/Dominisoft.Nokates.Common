@@ -1,18 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace Dominisoft.Nokates.Common.Infrastructure.Attributes
 {
 
-    [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property)]
-    public class JsonColumnAttribute : Attribute
+    [AttributeUsage(AttributeTargets.Property)]
+    public class JsonColumnAttribute : ColumnAttribute
     {
-        public JsonColumnAttribute(string name)
+        public JsonColumnAttribute(string name):base(name)
         {
-            Name = name;
         }
 
-        public string Name { get; }
     }
 }

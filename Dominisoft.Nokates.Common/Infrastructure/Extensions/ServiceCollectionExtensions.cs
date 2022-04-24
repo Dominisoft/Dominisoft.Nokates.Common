@@ -17,7 +17,6 @@ namespace Dominisoft.Nokates.Common.Infrastructure.Extensions
     {
         public static IServiceCollection AddNokates(this IServiceCollection services, string configurationAppName = "Configuration", string configFile = null)
         {
-            var token = ConfigurationValues.Token;
             if (string.IsNullOrWhiteSpace(configFile))
             {
                 ConfigurationValues.LoadConfig(configurationAppName);
@@ -25,7 +24,7 @@ namespace Dominisoft.Nokates.Common.Infrastructure.Extensions
             else
             {
                 ConfigurationValues.LoadConfigFromFile(configFile);
-              }
+            }
             EventRecorder.Start();
 
             services.SetupJwtServices();

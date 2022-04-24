@@ -22,7 +22,7 @@ namespace Dominisoft.Nokates.Common.Infrastructure.Controllers
             return Get(id);
         }
         [Microsoft.AspNetCore.Mvc.HttpGet("{id}")]
-        public virtual TEntity Get(long id)
+        public virtual TEntity Get(int id)
             => Repository.Get(id);
         [Microsoft.AspNetCore.Mvc.HttpGet("All")]
         public virtual List<TEntity> GetAll()
