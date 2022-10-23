@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Linq;
 using Dominisoft.Nokates.Common.Infrastructure.Configuration;
 using Dominisoft.Nokates.Common.Infrastructure.Extensions;
@@ -11,8 +12,9 @@ namespace Dominisoft.Nokates.Common.Infrastructure.Listener
 {
     public static class EventRecorder
     {
-        private static SqlRepository<LogEntry> _logRepo;
-        private static SqlRepository<RequestMetric> _requestRepo;
+        private static ISqlRepository<LogEntry> _logRepo;
+        private static ISqlRepository<RequestMetric> _requestRepo;
+        private static ISqlRepository<RepositoryMetric> _repositoryMetricRepo;
 
         public static void Start()
         {
@@ -20,9 +22,12 @@ namespace Dominisoft.Nokates.Common.Infrastructure.Listener
                 
             _logRepo = RepositoryHelper.CreateRepository<LogEntry>();
             _requestRepo = RepositoryHelper.CreateRepository<RequestMetric>();
+            _repositoryMetricRepo = RepositoryHelper.CreateRepository<RepositoryMetric>();
 
             StatusValues.EventLog.CollectionChanged += EventLog_CollectionChanged;
             StatusValues.RequestMetrics.CollectionChanged += RequestMetrics_CollectionChanged;
+            StatusValues.RepositoryMetrics.CollectionChanged += RepositoryMetrics_CollectionChanged;
+
 
             StatusValues.EventLog.ToList().ForEach(msg =>
             {
@@ -34,6 +39,17 @@ namespace Dominisoft.Nokates.Common.Infrastructure.Listener
                 {
                     // ignored
                 }
+            });
+        }
+
+        private static void RepositoryMetrics_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            var newMessages = e.NewItems.Serialize().Deserialize<List<RepositoryMetric>>();
+            newMessages.ForEach(msg =>
+            {
+
+                _repositoryMetricRepo.Create(msg);
+
             });
         }
 

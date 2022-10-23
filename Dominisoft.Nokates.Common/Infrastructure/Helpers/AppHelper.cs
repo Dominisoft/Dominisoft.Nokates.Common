@@ -27,9 +27,9 @@ namespace Dominisoft.Nokates.Common.Infrastructure.Helpers
             if (AppDomain.CurrentDomain.BaseDirectory == null) return _appName;
             var exeDir = Environment.ExpandEnvironmentVariables(AppDomain.CurrentDomain.BaseDirectory);
             //var dirs = apps.SelectMany(a => a.VirtualDirectories.Select(d => Environment.ExpandEnvironmentVariables(d.PhysicalPath))).ToList();
-            var app = apps.FirstOrDefault(app => app.VirtualDirectories.Any(dir => dir.PhysicalPath + "\\" == exeDir));
+            var application = apps.FirstOrDefault(app => app.VirtualDirectories.Any(dir => dir.PhysicalPath + "\\" == exeDir));
 
-            _appName= app?.ApplicationPoolName ?? UnknownName;
+            _appName= application?.ApplicationPoolName ?? UnknownName;
 
             return _appName;
         }
@@ -133,8 +133,8 @@ namespace Dominisoft.Nokates.Common.Infrastructure.Helpers
         private static bool PathMatches(EndpointDescription e, string path)
         {
             var endpointPath = ($"{e.Method}:{e.Route.Before("?")}").ToLower();
-            var endpointParts = endpointPath.Split("/");
-            var pathParts = path.ToLower().Split("/");
+            var endpointParts = endpointPath.Split('/');
+            var pathParts = path.ToLower().Split('/');
             if (endpointParts.Length != pathParts.Length)
                 return false;
             var match = true;
@@ -179,7 +179,7 @@ namespace Dominisoft.Nokates.Common.Infrastructure.Helpers
             var site = sites.FirstOrDefault(s => s.Applications.Count == maxCount);
             if (site == null) return string.Empty;
             var binding = site.Bindings.FirstOrDefault();
-            return binding != null ? @$"{binding.Protocol}://{binding.Host}/" : string.Empty;
+            return binding != null ? $@"{binding.Protocol}://{binding.Host}/" : string.Empty;
 
         }
         public static string GetAppUri()

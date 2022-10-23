@@ -68,18 +68,18 @@ namespace Dominisoft.Nokates.Common.Infrastructure.Middleware
            
             var claims = context.User.Claims.ToList();
 
-            if (claims.Any(c => c.Type == "role_name" && c.Value.Trim() == "Admin"))
+            if (claims.Any(claim => claim.Type == "role_name" && claim.Value.Trim() == "Admin"))
                 return;
-            var c = string.Join(',', claims.Select(cc => $"{cc.Type}:{cc.Value}"));
+            var claimsString = string.Join(",", claims.Select(claim => $"{claim.Type}:{claim.Value}"));
             const string key = "endpoint_permission";
 
-            var effectivePermissions = claims.Where(c => c.Type == key).Select(c => c.Value).ToList();           
+            var effectivePermissions = claims.Where(claim => claim.Type == key).Select(c => c.Value).ToList();           
 
-            var hasAccess= effectivePermissions.Contains(permission);
+            var hasAccess= effectivePermissions.Contains(permission) ;
            
             if (hasAccess) return;
 
-            throw new AuthorizationException($"User does not have permission for endpoint {permission}\r\nClaims:{c}");
+            throw new AuthorizationException($"User does not have permission for endpoint {permission}\r\nClaims:{claimsString}");
  
         }
     }

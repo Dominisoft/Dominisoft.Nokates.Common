@@ -3,13 +3,14 @@ using System.Linq;
 using Dominisoft.Nokates.Common.Infrastructure.Attributes;
 using Dominisoft.Nokates.Common.Infrastructure.Configuration;
 using Dominisoft.Nokates.Common.Infrastructure.Repositories;
+using Dominisoft.Nokates.Common.Infrastructure.RepositoryConnections;
 using Dominisoft.Nokates.Common.Models;
 
 namespace Dominisoft.Nokates.Common.Infrastructure.Helpers
 {
     public static class RepositoryHelper
     {
-        public static SqlRepository<TEntity> CreateRepository<TEntity>() where TEntity:Entity,new()
+        public static ISqlRepository<TEntity> CreateRepository<TEntity>() where TEntity:Entity,new()
         {
             var defaultConnectionName = GetDefaultConnectionName<TEntity>();
             var variableName = $"{defaultConnectionName}ConnectionString";
@@ -17,8 +18,7 @@ namespace Dominisoft.Nokates.Common.Infrastructure.Helpers
             if (!hasConnection)
                 throw new System.Exception($"No Connection String Defined: {variableName}");
 
-            //TODO: Register Interface with DI
-            return new SqlRepository<TEntity>(new SqlConnection(connectionString));
+            return new SqlRepository<TEntity>(new SqlConnectionWrapper(connectionString));
         }
 
         private static string GetDefaultConnectionName<TEntity>() where TEntity : Entity

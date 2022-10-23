@@ -1,17 +1,32 @@
 ﻿using System.Data.SqlClient;
 using System.Collections.Generic;
 using System.Linq;
+using Dominisoft.Nokates.Common.Infrastructure.Extensions;
+using Dominisoft.Nokates.Common.Infrastructure.Helpers;
+using Dominisoft.Nokates.Common.Infrastructure.RepositoryConnections;
 using Dominisoft.Nokates.Common.Models;
 using Dominisoft.SqlBuilder;
+using Microsoft.IdentityModel.Logging;
 
 
 namespace Dominisoft.Nokates.Common.Infrastructure.Repositories
 {
-    public class SqlRepository<TEntity> where TEntity : Entity, new()
+    public interface ISqlRepository<TEntity>
     {
-        private readonly SqlConnection _connection;
+        int Create(TEntity entity);
+        TEntity Update(TEntity entity);
+        TEntity Get(int Id);
+        List<TEntity> GetAll();
+        List<TEntity> GetAllMatchingFilter(object filters);
+        List<TEntity> GetAllMatchingAnyFilter(object filters);
+        bool Delete(TEntity id);
 
-        public SqlRepository(SqlConnection connection)
+    }
+    public class SqlRepository<TEntity>: ISqlRepository<TEntity> where TEntity : Entity, new()
+    {
+        private readonly ISqlConnectionWrapper _connection;
+
+        public SqlRepository(ISqlConnectionWrapper connection)
         {
             _connection = connection;
         }
@@ -21,7 +36,7 @@ namespace Dominisoft.Nokates.Common.Infrastructure.Repositories
         {
 
             var id = _connection.Insert(entity);  
-            return id;
+             return id;
         }
 
 
@@ -31,9 +46,14 @@ namespace Dominisoft.Nokates.Common.Infrastructure.Repositories
             return _connection.Get(e);
         }
         public List<TEntity> GetAll()
-        {
-            return _connection.GetAll<TEntity>();
-        }
+            => _connection.GetAll<TEntity>();
+
+        public List<TEntity> GetAllMatchingFilter(object filters)
+            => _connection.GetAllFilter<TEntity>(filters);
+
+        public List<TEntity> GetAllMatchingAnyFilter(object filters)
+            => _connection.GetAnyFilter<TEntity>(filters);
+
         public TEntity Update(TEntity entity)
         {
             _connection.Update(entity);
@@ -42,8 +62,7 @@ namespace Dominisoft.Nokates.Common.Infrastructure.Repositories
         public bool Delete(TEntity entity)
         {
             var removed =  _connection.Delete(entity);
-            return removed>0;
+            return true;
         }
-
     }
 }

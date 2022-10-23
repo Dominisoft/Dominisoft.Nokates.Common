@@ -36,6 +36,13 @@ namespace Dominisoft.Nokates.Common.Infrastructure.Configuration
 
         }
 
+        public static bool GetBoolValueOrDefault(string variableName)
+        {
+            TryGetValue(out var str, variableName);
+            bool.TryParse(str, out var result);
+            return result;
+        }
+
         private static string SetToken()
         {
 

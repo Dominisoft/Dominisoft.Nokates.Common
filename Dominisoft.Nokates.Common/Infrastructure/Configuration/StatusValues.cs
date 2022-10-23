@@ -13,6 +13,7 @@ namespace Dominisoft.Nokates.Common.Infrastructure.Configuration
         public static ServiceStatus Status;
         public static ObservableCollection<LogEntry> EventLog = new ObservableCollection<LogEntry>();
         public static ObservableCollection<RequestMetric> RequestMetrics = new ObservableCollection<RequestMetric>();
+        public static ObservableCollection<RepositoryMetric> RepositoryMetrics = new ObservableCollection<RepositoryMetric>();
         internal static void Log(string str)
         {
             var s = RedactSensitiveInfo(str);
@@ -36,9 +37,11 @@ namespace Dominisoft.Nokates.Common.Infrastructure.Configuration
         internal static void LogRequestAndResponse(RequestMetric request)
         {
             var path = request.RequestPath;
-          //  if (path.ToLower().StartsWith("/nokates")) return;
+            if (path.ToLower().StartsWith("/nokates")) return;
             RequestMetrics.Add(request);
-
         }
+
+        public static void LogRepositoryMetric(RepositoryMetric metric)
+            => RepositoryMetrics.Add(metric);
     }
 }

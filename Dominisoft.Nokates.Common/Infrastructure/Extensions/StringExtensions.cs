@@ -6,7 +6,7 @@ namespace Dominisoft.Nokates.Common.Infrastructure.Extensions
     {
         public static string Before(this string str, string s)
         {
-            var parts = str.Split(s);
+            var parts = str.Split(s.ToCharArray().FirstOrDefault());
             return parts[0];
         }
         public static string Remove(this string str, params string[] strings)

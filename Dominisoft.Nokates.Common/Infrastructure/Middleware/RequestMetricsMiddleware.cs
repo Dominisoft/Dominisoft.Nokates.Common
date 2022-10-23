@@ -42,7 +42,9 @@ namespace Dominisoft.Nokates.Common.Infrastructure.Middleware
             var originalBodyStream = context.Response.Body;
 
             //Create a new memory stream...
-            await using var responseBody = new MemoryStream();
+            var responseBody = new MemoryStream();
+            
+
             //...and use that for the temporary response body
             context.Response.Body = responseBody;
 
@@ -73,6 +75,12 @@ namespace Dominisoft.Nokates.Common.Infrastructure.Middleware
 
             var endpointAuthDetails = context.Items.ContainsKey("EndpointAuthorizationDetails") ? (EndpointDescription)context.Items["EndpointAuthorizationDetails"] : null;
             var designation = endpointAuthDetails==null?"":$"{AppHelper.GetAppName()}:{endpointAuthDetails.Action}";
+            var logRequestBody = ConfigurationValues.GetBoolValueOrDefault("LogRequestBody");
+            var logResponseBody = ConfigurationValues.GetBoolValueOrDefault("LogResponseBody");
+
+            if (!logResponseBody) request = string.Empty;
+            if (!logRequestBody) response = string.Empty;
+
             var logRecord = new RequestMetric
             {
                 RequestTrackingId = requestTrackingId,
@@ -96,6 +104,7 @@ namespace Dominisoft.Nokates.Common.Infrastructure.Middleware
 
             //Copy the contents of the new memory stream (which contains the response) to the original stream, which is then returned to the client.
             await responseBody.CopyToAsync(originalBodyStream);
+            
 
         }
 
@@ -135,7 +144,13 @@ namespace Dominisoft.Nokates.Common.Infrastructure.Middleware
             bodyAsText = formData.Files.Aggregate(bodyAsText, (current, formDataFile) => current + $"File:{formDataFile.FileName}  : {formDataFile.Length} bytes\r\n");
 
             //..and finally, assign the read body back to the request body, which is allowed because of EnableRewind()
-            request.Form = new FormCollection(new Dictionary<string, StringValues>(formData), formData.Files);
+            var dictionary = new Dictionary<string, StringValues>();
+            foreach (var key in formData.Keys)
+            {
+                dictionary.Add(key,formData[key]);
+            }
+            request.Form = new FormCollection(dictionary, formData.Files);
+
 
             return $"{request.Scheme} {request.Host}{request.Path} {request.QueryString}\r\nHeaders:\r\n{headers}\r\nBody:\r\n {bodyAsText}";
         }

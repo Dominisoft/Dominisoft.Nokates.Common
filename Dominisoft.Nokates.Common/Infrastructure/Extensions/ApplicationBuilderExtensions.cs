@@ -1,4 +1,5 @@
 ﻿using System.Data.SqlClient;
+using Dominisoft.Nokates.Common.Infrastructure.Configuration;
 using Dominisoft.Nokates.Common.Infrastructure.Middleware;
 using Microsoft.AspNetCore.Builder;
 
@@ -9,10 +10,12 @@ namespace Dominisoft.Nokates.Common.Infrastructure.Extensions
        
         public static IApplicationBuilder UseNokates(this IApplicationBuilder app)
         {
-            app.UseRouting();
+            //app.UseRouting();
+            var logRequestMetrics = ConfigurationValues.GetBoolValueOrDefault("LogRequestMetrics");
+            if (logRequestMetrics)
             app.UseMiddleware<RequestMetricsMiddleware>();
             app.UseAuthentication();
-            app.UseAuthorization();
+           // app.UseAuthorization();
             app.UseMiddleware<CustomExceptionMiddleware>();
             app.UseMiddleware<AuthorizationMiddleware>();
 

@@ -23,27 +23,27 @@ namespace Dominisoft.Nokates.Common.Infrastructure.Controllers
 
         [HttpGet("ServiceStatus")]
         [EndpointGroup("NokatesAdmin")]
-        public ActionResult<ServiceStatus> GetStatus() 
+        public ActionResult<ServiceStatus> GetStatus()
             => StatusValues.Status;
 
         [HttpGet("Log")]
         [EndpointGroup("NokatesAdmin")]
-        public ActionResult<List<LogEntry>> GetLog() 
+        public ActionResult<List<LogEntry>> GetLog()
             => StatusValues.EventLog.ToList();
 
         [HttpGet("Requests")]
         [EndpointGroup("NokatesAdmin")]
-        public ActionResult<List<RequestMetric>> GetRequestResponses() 
-            => StatusValues.RequestMetrics.ToList();
+        public ActionResult<List<RequestMetric>> GetRequestResponses()
+        => StatusValues.RequestMetrics?.Where(rm => !rm?.RequestPath?.ToLower()?.StartsWith("/nokates")??false).ToList() ?? new List<RequestMetric>();
 
         [HttpGet("EndpointGroups")]
         [EndpointGroup("NokatesAdmin")]
-        public ActionResult<Dictionary<string, List<string>>> GetEndpointGroups() 
+        public ActionResult<Dictionary<string, List<string>>> GetEndpointGroups()
             => EndpointGroups;
 
         [HttpGet("Endpoints")]
         [EndpointGroup("NokatesAdmin")]
-        public ActionResult<List<EndpointDescription>> ListAllEndpoints() 
+        public ActionResult<List<EndpointDescription>> ListAllEndpoints()
             => AppHelper.GetEndpoints(_endpointSources.ToList());
 
     }

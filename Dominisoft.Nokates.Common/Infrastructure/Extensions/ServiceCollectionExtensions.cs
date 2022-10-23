@@ -78,7 +78,7 @@ namespace Dominisoft.Nokates.Common.Infrastructure.Extensions
                     };
                 });
 
-            services.AddAuthorization();
+            //services.AddAuthorization();
         }
     }
 }
