@@ -3,7 +3,6 @@ using System.Linq;
 using Dominisoft.Nokates.Common.Infrastructure.Attributes;
 using Dominisoft.Nokates.Common.Infrastructure.Configuration;
 using Dominisoft.Nokates.Common.Infrastructure.Repositories;
-using Dominisoft.Nokates.Common.Infrastructure.RepositoryConnections;
 using Dominisoft.Nokates.Common.Models;
 
 namespace Dominisoft.Nokates.Common.Infrastructure.Helpers
@@ -18,7 +17,7 @@ namespace Dominisoft.Nokates.Common.Infrastructure.Helpers
             if (!hasConnection)
                 throw new System.Exception($"No Connection String Defined: {variableName}");
 
-            return new SqlRepository<TEntity>(new SqlConnectionWrapper(connectionString));
+            return new SqlRepository<TEntity>(connectionString);
         }
 
         private static string GetDefaultConnectionName<TEntity>() where TEntity : Entity

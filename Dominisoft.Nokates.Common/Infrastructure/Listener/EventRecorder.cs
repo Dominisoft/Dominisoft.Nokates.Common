@@ -53,7 +53,7 @@ namespace Dominisoft.Nokates.Common.Infrastructure.Listener
             });
         }
 
-        private static void RequestMetrics_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        private static void RequestMetrics_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             var newMessages = e.NewItems.Serialize().Deserialize<List<RequestMetric>>();
             newMessages.ForEach(msg =>
@@ -64,7 +64,7 @@ namespace Dominisoft.Nokates.Common.Infrastructure.Listener
             });
         }
 
-        private static void EventLog_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        private static void EventLog_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             var newMessages =e.NewItems.Serialize().Deserialize<List<LogEntry>>();
             newMessages.ForEach(msg =>

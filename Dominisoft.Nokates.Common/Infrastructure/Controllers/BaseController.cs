@@ -13,13 +13,13 @@ namespace Dominisoft.Nokates.Common.Infrastructure.Controllers
 
         public BaseController(SqlRepository<TEntity> repository)
         {
-            this.Repository = repository;
+            Repository = repository;
         }
         [Microsoft.AspNetCore.Mvc.HttpPost("Create")]
         public virtual TEntity Create([Microsoft.AspNetCore.Mvc.FromBody] TEntity e)
         {
-            var id = Repository.Create(e);
-            return Get(id);
+            var entity = Repository.Create(e);
+            return entity;
         }
         [Microsoft.AspNetCore.Mvc.HttpGet("{id}")]
         public virtual TEntity Get(int id)
