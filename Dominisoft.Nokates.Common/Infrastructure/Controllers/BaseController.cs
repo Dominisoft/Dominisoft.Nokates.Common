@@ -9,9 +9,9 @@ namespace Dominisoft.Nokates.Common.Infrastructure.Controllers
     [ApiController]
     public class BaseController<TEntity> : ApiController where TEntity : Entity,new()
     {
-        protected readonly SqlRepository<TEntity> Repository;
+        protected readonly ISqlRepository<TEntity> Repository;
 
-        public BaseController(SqlRepository<TEntity> repository)
+        public BaseController(ISqlRepository<TEntity> repository)
         {
             Repository = repository;
         }

@@ -4,6 +4,7 @@ namespace Dominisoft.Nokates.Common.Infrastructure.Extensions
 {
     public static class StringExtensions
     {
+        
         public static string Before(this string str, string s)
         {
             var parts = str.Split(s.ToCharArray().FirstOrDefault());

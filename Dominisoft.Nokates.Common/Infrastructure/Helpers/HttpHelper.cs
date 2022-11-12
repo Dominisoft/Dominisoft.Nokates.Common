@@ -5,6 +5,7 @@ using System.Security.Authentication;
 using System.Text;
 using System.Threading;
 using Dominisoft.Nokates.Common.Infrastructure.Extensions;
+using Dominisoft.Nokates.Common.Models;
 using Newtonsoft.Json;
 
 
@@ -22,77 +23,77 @@ namespace Dominisoft.Nokates.Common.Infrastructure.Helpers
 
         #region GET
 
-        public static string Get(string path)
+        public static RestResponse Get(string path)
             => Get(path, _token);
-        public static string Get(string path, string token)
+        public static RestResponse Get(string path, string token)
             => SendRequestWithStringReturn(GenerateRequest(path, HttpMethod.Get, token));
 
-        public static TResponse Get<TResponse>(string path)
-      => Get<TResponse>(path, _token);
-        public static TResponse Get<TResponse>(string path, string token)
-            => SendRequestWithReturn<TResponse>(GenerateRequest(path, HttpMethod.Get, token));
+        public static RestResponse<TResponse> Get<TResponse>(string path) where TResponse : class 
+            => Get<TResponse>(path, _token);
+        public static RestResponse<TResponse> Get<TResponse>(string path, string token) where TResponse : class
+            => SendRequestWithObjectReturn<TResponse>(GenerateRequest(path, HttpMethod.Get, token));
 
         #endregion
 
         #region POST
 
-        public static string Post(string path)
+        public static RestResponse Post(string path)
             => Post(path, _token);
-        public static string Post(string path, string token)
+        public static RestResponse Post(string path, string token)
             => SendRequestWithStringReturn(GenerateRequest(path, HttpMethod.Post, token));
-        public static string Post(string path, object body)
+        public static RestResponse Post(string path, object body)
             => Post(path, body, _token);
-        public static string Post(string path, object body, string token)
+        public static RestResponse Post(string path, object body, string token)
             => SendRequestWithStringReturn(GenerateRequestWithBody(path, body, HttpMethod.Post, token));
-        public static TResponse Post<TResponse>(string path)
+        public static RestResponse<TResponse> Post<TResponse>(string path) where TResponse : class 
             => Post<TResponse>(path, _token);
-        public static TResponse Post<TResponse>(string path, string token)
-            => SendRequestWithReturn<TResponse>(GenerateRequest(path, HttpMethod.Post, token));
-        public static TResponse Post<TResponse>(string path, object body)
+        public static RestResponse<TResponse> Post<TResponse>(string path, string token) where TResponse : class
+            => SendRequestWithObjectReturn<TResponse>(GenerateRequest(path, HttpMethod.Post, token));
+        public static RestResponse<TResponse> Post<TResponse>(string path, object body) where TResponse : class
             => Post<TResponse>(path, body, _token);
-        public static TResponse Post<TResponse>(string path, object body, string token)
-            => SendRequestWithReturn<TResponse>(GenerateRequestWithBody(path, body, HttpMethod.Post, token));
+        public static RestResponse<TResponse> Post<TResponse>(string path, object body, string token) where TResponse : class
+            => SendRequestWithObjectReturn<TResponse>(GenerateRequestWithBody(path, body, HttpMethod.Post, token));
 
         #endregion
 
         #region PUT
 
-        public static string Put(string path)
+        public static RestResponse Put(string path)
             => Put(path, _token);
-        public static string Put(string path, string token)
+        public static RestResponse Put(string path, string token)
             => SendRequestWithStringReturn(GenerateRequest(path, HttpMethod.Put, token));
-        public static string Put(string path, object body)
+        public static RestResponse Put(string path, object body)
             => Put(path, body, _token);
-        public static string Put(string path, object body, string token)
+        public static RestResponse Put(string path, object body, string token)
             => SendRequestWithStringReturn(GenerateRequestWithBody(path, body, HttpMethod.Put, token));
-        public static TResponse Put<TResponse>(string path)
+        public static RestResponse<TResponse> Put<TResponse>(string path) where TResponse : class
             => Put<TResponse>(path, _token);
-        public static TResponse Put<TResponse>(string path, string token)
+        public static RestResponse<TResponse> Put<TResponse>(string path, string token) where TResponse : class
             => SendRequestWithReturn<TResponse>(GenerateRequest(path, HttpMethod.Put, token));
-        public static TResponse Put<TResponse>(string path, object body)
+        public static RestResponse<TResponse> Put<TResponse>(string path, object body) where TResponse : class
             => Put<TResponse>(path, body, _token);
-        public static TResponse Put<TResponse>(string path, object body, string token)
+        public static RestResponse<TResponse> Put<TResponse>(string path, object body, string token) where TResponse : class
             => SendRequestWithReturn<TResponse>(GenerateRequestWithBody(path, body, HttpMethod.Put, token));
 
         #endregion
 
         #region Delete
 
-        public static string Delete(string path)
+        public static RestResponse Delete(string path)
             => Delete(path, _token);
-        public static string Delete(string path, string token)
+        public static RestResponse Delete(string path, string token)
             => SendRequestWithStringReturn(GenerateRequest(path, HttpMethod.Delete, token));
-        public static string Delete(string path, object body)
+        public static RestResponse Delete(string path, object body)
             => Delete(path, body, _token);
-        public static string Delete(string path, object body, string token)
+        public static RestResponse Delete(string path, object body, string token)
             => SendRequestWithStringReturn(GenerateRequestWithBody(path, body, HttpMethod.Delete, token));
-        public static TResponse Delete<TResponse>(string path)
+        public static RestResponse<TResponse> Delete<TResponse>(string path) where TResponse : class
             => Delete<TResponse>(path, _token);
-        public static TResponse Delete<TResponse>(string path, string token)
+        public static RestResponse<TResponse> Delete<TResponse>(string path, string token) where TResponse : class
             => SendRequestWithReturn<TResponse>(GenerateRequest(path, HttpMethod.Delete, token));
-        public static TResponse Delete<TResponse>(string path, object body)
+        public static RestResponse<TResponse> Delete<TResponse>(string path, object body) where TResponse : class
             => Delete<TResponse>(path, body, _token);
-        public static TResponse Delete<TResponse>(string path, object body, string token)
+        public static RestResponse<TResponse> Delete<TResponse>(string path, object body, string token) where TResponse : class
             => SendRequestWithReturn<TResponse>(GenerateRequestWithBody(path, body, HttpMethod.Delete, token));
 
         #endregion
@@ -130,9 +131,9 @@ namespace Dominisoft.Nokates.Common.Infrastructure.Helpers
                 };
         }
 
-        public static TResponse SendRequestWithReturn<TResponse>(HttpRequestMessage request)
-            => JsonConvert.DeserializeObject<TResponse>(SendRequestWithStringReturn(request));
-        public static string SendRequestWithStringReturn(HttpRequestMessage request)
+        public static RestResponse<TResponse> SendRequestWithReturn<TResponse>(HttpRequestMessage request) where TResponse : class 
+            => SendRequestWithObjectReturn<TResponse>(request);
+        public static RestResponse SendRequestWithStringReturn(HttpRequestMessage request)
         {
             var client = new HttpClient();
             AddRequestTrackingInfoToRequest(ref request);
@@ -143,7 +144,23 @@ namespace Dominisoft.Nokates.Common.Infrastructure.Helpers
                 throw new AuthenticationException($"Unable to authenticate to endpoint {request.RequestUri}");
             var task2 = response.Content.ReadAsStringAsync();
             task2.Wait();
-            return task2.Result;
+            var result = task2.Result;
+            return new RestResponse((int) response.StatusCode, result);
+        }
+
+        public static RestResponse<TReturn> SendRequestWithObjectReturn<TReturn>(HttpRequestMessage request) where TReturn : class
+        {
+            var client = new HttpClient();
+            AddRequestTrackingInfoToRequest(ref request);
+            var task = client.SendAsync(request);
+            task.Wait();
+            var response = task.Result;
+            if (response.StatusCode == HttpStatusCode.Unauthorized)
+                throw new AuthenticationException($"Unable to authenticate to endpoint {request.RequestUri}");
+            var task2 = response.Content.ReadAsStringAsync();
+            task2.Wait();
+            var result = task2.Result;
+            return new RestResponse<TReturn>((int)response.StatusCode, result);
         }
         private static void AddRequestTrackingInfoToRequest(ref HttpRequestMessage request)
         {

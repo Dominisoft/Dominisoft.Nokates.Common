@@ -65,8 +65,14 @@ namespace Dominisoft.Nokates.Common.Infrastructure.Configuration
         }
         private static void GetConfig(string url)
         {
-            JsonConfig = HttpHelper.Get(url, string.Empty);
-            Values = JsonConvert.DeserializeObject<Dictionary<string, string>>(JsonConfig);
+            var response = HttpHelper.Get<Dictionary<string, string>>(url, string.Empty);
+
+            if (response.IsError)
+            {
+                throw new Exception($"Unable to get Configuration: {response.Message}");
+            }
+
+            Values = response.Object;
         }
 
 

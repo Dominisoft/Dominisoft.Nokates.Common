@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Data.SqlClient;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 using Dominisoft.Nokates.Common.Infrastructure.Configuration;
@@ -10,6 +11,10 @@ using Dominisoft.Nokates.Common.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
+using RepoDb;
+using RepoDb.DbHelpers;
+using RepoDb.DbSettings;
+using RepoDb.StatementBuilders;
 
 namespace Dominisoft.Nokates.Common.Infrastructure.Extensions
 {
@@ -17,6 +22,8 @@ namespace Dominisoft.Nokates.Common.Infrastructure.Extensions
     {
         public static IServiceCollection AddNokates(this IServiceCollection services, string configurationAppName = "Configuration", string configFile = null)
         {
+            SetupRepoDb();
+
             if (string.IsNullOrWhiteSpace(configFile))
             {
                 ConfigurationValues.LoadConfig(configurationAppName);
@@ -49,6 +56,19 @@ namespace Dominisoft.Nokates.Common.Infrastructure.Extensions
 
 
             return services;
+        }
+        private static void SetupRepoDb()
+        {
+            SqlServerBootstrap.Initialize();
+
+            var dbSetting = new SqlServerDbSetting();
+
+            DbSettingMapper
+                .Add<SqlConnection>(dbSetting, true);
+            DbHelperMapper
+                .Add<SqlConnection>(new SqlServerDbHelper(), true);
+            StatementBuilderMapper
+                .Add<SqlConnection>(new SqlServerStatementBuilder(dbSetting), true);
         }
         private static void SetupJwtServices(this IServiceCollection services)
         {

@@ -25,7 +25,7 @@ namespace Dominisoft.Nokates.Common.Tests.Infrastructure.Helpers
         public void GetShouldReturnString()
         {
             var result = HttpHelper.Get(EchoUrl, string.Empty);
-            Assert.IsTrue(result.Contains("\"method\": \"GET\""));
+            Assert.IsTrue(result.Message.Contains("\"method\": \"GET\""));
         }
         [Test]
         public void GetShouldReturnStringWithTokenFromProperty()
@@ -33,7 +33,7 @@ namespace Dominisoft.Nokates.Common.Tests.Infrastructure.Helpers
             var id = Guid.NewGuid();
             HttpHelper.SetToken(id.ToString());
             var result = HttpHelper.Get(EchoUrl);
-            var response = result.Deserialize<dynamic>();
+            var response = result.Message.Deserialize<dynamic>();
             var authHeader = (string)response.headers.Authorization;
             Assert.IsTrue(authHeader.Contains($"Bearer {id}"));
         }
@@ -41,14 +41,15 @@ namespace Dominisoft.Nokates.Common.Tests.Infrastructure.Helpers
         public void GetShouldMapToObject()
         {
             var result = HttpHelper.Get<TestResponse>(EchoUrl, string.Empty);
-            Assert.AreEqual("GET", result.method);
+            Assert.AreEqual("GET", result.Object.method);
         }
+
         [Test]
         public void GetShouldAddAuthHeader()
         {
             var id = Guid.NewGuid();
             var result = HttpHelper.Get<TestResponse>(EchoUrl, id.ToString());
-            var authHeader = result.headers.Authorization;
+            var authHeader = result.Object.headers.Authorization;
             Assert.AreEqual($"Bearer {id}", authHeader);
         }
         [Test]
@@ -57,7 +58,7 @@ namespace Dominisoft.Nokates.Common.Tests.Infrastructure.Helpers
             var id = Guid.NewGuid();
             HttpHelper.SetToken(id.ToString());
             var result = HttpHelper.Get<TestResponse>(EchoUrl);
-            var authHeader = result.headers.Authorization;
+            var authHeader = result.Object.headers.Authorization;
             Assert.AreEqual($"Bearer {id}", authHeader);
         }
         #endregion
@@ -67,7 +68,7 @@ namespace Dominisoft.Nokates.Common.Tests.Infrastructure.Helpers
         public void PostShouldReturnString()
         {
             var result = HttpHelper.Post(EchoUrl, string.Empty);
-            var result2 = result.Deserialize<TestResponse>();
+            var result2 = result.Message.Deserialize<TestResponse>();
             Assert.AreEqual("POST",result2.method);
         }
         [Test]
@@ -75,7 +76,7 @@ namespace Dominisoft.Nokates.Common.Tests.Infrastructure.Helpers
         {
             var body = new { IsTestObject = true };
             var result = HttpHelper.Post(EchoUrl, body, string.Empty);
-            Assert.IsTrue(result.Contains("\"IsTestObject\": true"));
+            Assert.IsTrue(result.Message.Contains("\"IsTestObject\": true"));
         }
 
         [Test]
@@ -84,20 +85,20 @@ namespace Dominisoft.Nokates.Common.Tests.Infrastructure.Helpers
             var id = Guid.NewGuid();
             HttpHelper.SetToken(id.ToString());
             var result = HttpHelper.Post(EchoUrl);
-            Assert.IsTrue(result.Contains($"\"Authorization\": \"Bearer {id}\""));
+            Assert.IsTrue(result.Message.Contains($"\"Authorization\": \"Bearer {id}\""));
         }
         [Test]
         public void PostShouldMapToObject()
         {
             var result = HttpHelper.Post<TestResponse>(EchoUrl, string.Empty);
-            Assert.AreEqual("POST", result.method);
+            Assert.AreEqual("POST", result.Object.method);
         }
         [Test]
         public void PostShouldAddAuthHeader()
         {
             var id = Guid.NewGuid();
             var result = HttpHelper.Post<TestResponse>(EchoUrl, id.ToString());
-            var authHeader = result.headers.Authorization;
+            var authHeader = result.Object.headers.Authorization;
             Assert.AreEqual($"Bearer {id}", authHeader);
         }
         [Test]
@@ -106,7 +107,7 @@ namespace Dominisoft.Nokates.Common.Tests.Infrastructure.Helpers
             var id = Guid.NewGuid();
             HttpHelper.SetToken(id.ToString());
             var result = HttpHelper.Post<TestResponse>(EchoUrl);
-            var authHeader = result.headers.Authorization;
+            var authHeader = result.Object.headers.Authorization;
             Assert.AreEqual($"Bearer {id}", authHeader);
         }
         [Test]
@@ -115,7 +116,7 @@ namespace Dominisoft.Nokates.Common.Tests.Infrastructure.Helpers
             var id = Guid.NewGuid();
             var body = new { IsTestObject = true };
             var result = HttpHelper.Post<TestResponse>(EchoUrl, body, id.ToString());
-            var authHeader = result.headers.Authorization;
+            var authHeader = result.Object.headers.Authorization;
             Assert.AreEqual($"Bearer {id}", authHeader);
         }
         [Test]
@@ -125,7 +126,7 @@ namespace Dominisoft.Nokates.Common.Tests.Infrastructure.Helpers
             HttpHelper.SetToken(id.ToString());
             var body = new { IsTestObject = true };
             var result = HttpHelper.Post<TestResponse>(EchoUrl, body);
-            var authHeader = result.headers.Authorization;
+            var authHeader = result.Object.headers.Authorization;
             Assert.AreEqual($"Bearer {id}", authHeader);
         }
         [Test]
@@ -135,8 +136,8 @@ namespace Dominisoft.Nokates.Common.Tests.Infrastructure.Helpers
             HttpHelper.SetToken(id.ToString());
             var body = new { IsTestObject = true };
             var result = HttpHelper.Post(EchoUrl, body);
-            Assert.IsTrue(result.Contains("\"IsTestObject\": true"));
-            Assert.IsTrue(result.Contains($"\"Authorization\": \"Bearer {id}\""));
+            Assert.IsTrue(result.Message.Contains("\"IsTestObject\": true"));
+            Assert.IsTrue(result.Message.Contains($"\"Authorization\": \"Bearer {id}\""));
         }
         #endregion
 
@@ -145,14 +146,14 @@ namespace Dominisoft.Nokates.Common.Tests.Infrastructure.Helpers
         public void PutShouldReturnString()
         {
             var result = HttpHelper.Put(EchoUrl, string.Empty);
-            Assert.IsTrue(result.Contains("\"method\": \"PUT\""));
+            Assert.IsTrue(result.Message.Contains("\"method\": \"PUT\""));
         }
         [Test]
         public void PutShouldReturnStringWithBody()
         {
             var body = new { IsTestObject = true };
             var result = HttpHelper.Put(EchoUrl, body, string.Empty);
-            Assert.IsTrue(result.Contains("\"IsTestObject\": true"));
+            Assert.IsTrue(result.Message.Contains("\"IsTestObject\": true"));
         }
 
         [Test]
@@ -161,20 +162,20 @@ namespace Dominisoft.Nokates.Common.Tests.Infrastructure.Helpers
             var id = Guid.NewGuid();
             HttpHelper.SetToken(id.ToString());
             var result = HttpHelper.Put(EchoUrl);
-            Assert.IsTrue(result.Contains($"\"Authorization\": \"Bearer {id}\""));
+            Assert.IsTrue(result.Message.Contains($"\"Authorization\": \"Bearer {id}\""));
         }
         [Test]
         public void PutShouldMapToObject()
         {
             var result = HttpHelper.Put<TestResponse>(EchoUrl, string.Empty);
-            Assert.AreEqual("PUT", result.method);
+            Assert.AreEqual("PUT", result.Object.method);
         }
         [Test]
         public void PutShouldAddAuthHeader()
         {
             var id = Guid.NewGuid();
             var result = HttpHelper.Put<TestResponse>(EchoUrl, id.ToString());
-            var authHeader = result.headers.Authorization;
+            var authHeader = result.Object.headers.Authorization;
             Assert.AreEqual($"Bearer {id}", authHeader);
         }
         [Test]
@@ -183,7 +184,7 @@ namespace Dominisoft.Nokates.Common.Tests.Infrastructure.Helpers
             var id = Guid.NewGuid();
             HttpHelper.SetToken(id.ToString());
             var result = HttpHelper.Put<TestResponse>(EchoUrl);
-            var authHeader = result.headers.Authorization;
+            var authHeader = result.Object.headers.Authorization;
             Assert.AreEqual($"Bearer {id}", authHeader);
         }
         [Test]
@@ -192,7 +193,7 @@ namespace Dominisoft.Nokates.Common.Tests.Infrastructure.Helpers
             var id = Guid.NewGuid();
             var body = new { IsTestObject = true };
             var result = HttpHelper.Put<TestResponse>(EchoUrl, body, id.ToString());
-            var authHeader = result.headers.Authorization;
+            var authHeader = result.Object.headers.Authorization;
             Assert.AreEqual($"Bearer {id}", authHeader);
         }
         [Test]
@@ -202,7 +203,7 @@ namespace Dominisoft.Nokates.Common.Tests.Infrastructure.Helpers
             HttpHelper.SetToken(id.ToString());
             var body = new { IsTestObject = true };
             var result = HttpHelper.Put<TestResponse>(EchoUrl, body);
-            var authHeader = result.headers.Authorization;
+            var authHeader = result.Object.headers.Authorization;
             Assert.AreEqual($"Bearer {id}", authHeader);
         }
         [Test]
@@ -212,8 +213,8 @@ namespace Dominisoft.Nokates.Common.Tests.Infrastructure.Helpers
             HttpHelper.SetToken(id.ToString());
             var body = new { IsTestObject = true };
             var result = HttpHelper.Put(EchoUrl, body);
-            Assert.IsTrue(result.Contains("\"IsTestObject\": true"));
-            Assert.IsTrue(result.Contains($"\"Authorization\": \"Bearer {id}\""));
+            Assert.IsTrue(result.Message.Contains("\"IsTestObject\": true"));
+            Assert.IsTrue(result.Message.Contains($"\"Authorization\": \"Bearer {id}\""));
         }
         #endregion
 
@@ -222,14 +223,14 @@ namespace Dominisoft.Nokates.Common.Tests.Infrastructure.Helpers
         public void DeleteShouldReturnString()
         {
             var result = HttpHelper.Delete(EchoUrl, string.Empty);
-            Assert.IsTrue(result.Contains("\"method\": \"DELETE\""));
+            Assert.IsTrue(result.Message.Contains("\"method\": \"DELETE\""));
         }
         [Test]
         public void DeleteShouldReturnStringWithBody()
         {
             var body = new { IsTestObject = true };
             var result = HttpHelper.Delete(EchoUrl, body, string.Empty);
-            Assert.IsTrue(result.Contains("\"IsTestObject\": true"));
+            Assert.IsTrue(result.Message.Contains("\"IsTestObject\": true"));
         }
 
         [Test]
@@ -238,20 +239,20 @@ namespace Dominisoft.Nokates.Common.Tests.Infrastructure.Helpers
             var id = Guid.NewGuid();
             HttpHelper.SetToken(id.ToString());
             var result = HttpHelper.Delete(EchoUrl);
-            Assert.IsTrue(result.Contains($"\"Authorization\": \"Bearer {id}\""));
+            Assert.IsTrue(result.Message.Contains($"\"Authorization\": \"Bearer {id}\""));
         }
         [Test]
         public void DeleteShouldMapToObject()
         {
             var result = HttpHelper.Delete<TestResponse>(EchoUrl, string.Empty);
-            Assert.AreEqual("DELETE", result.method);
+            Assert.AreEqual("DELETE", result.Object.method);
         }
         [Test]
         public void DeleteShouldAddAuthHeader()
         {
             var id = Guid.NewGuid();
             var result = HttpHelper.Delete<TestResponse>(EchoUrl, id.ToString());
-            var authHeader = result.headers.Authorization;
+            var authHeader = result.Object.headers.Authorization;
             Assert.AreEqual($"Bearer {id}", authHeader);
         }
         [Test]
@@ -260,7 +261,7 @@ namespace Dominisoft.Nokates.Common.Tests.Infrastructure.Helpers
             var id = Guid.NewGuid();
             HttpHelper.SetToken(id.ToString());
             var result = HttpHelper.Delete<TestResponse>(EchoUrl);
-            var authHeader = result.headers.Authorization;
+            var authHeader = result.Object.headers.Authorization;
             Assert.AreEqual($"Bearer {id}", authHeader);
         }
         [Test]
@@ -269,7 +270,7 @@ namespace Dominisoft.Nokates.Common.Tests.Infrastructure.Helpers
             var id = Guid.NewGuid();
             var body = new { IsTestObject = true };
             var result = HttpHelper.Delete<TestResponse>(EchoUrl, body, id.ToString());
-            var authHeader = result.headers.Authorization;
+            var authHeader = result.Object.headers.Authorization;
             Assert.AreEqual($"Bearer {id}", authHeader);
         }
         [Test]
@@ -279,7 +280,7 @@ namespace Dominisoft.Nokates.Common.Tests.Infrastructure.Helpers
             HttpHelper.SetToken(id.ToString());
             var body = new { IsTestObject = true };
             var result = HttpHelper.Delete<TestResponse>(EchoUrl, body);
-            var authHeader = result.headers.Authorization;
+            var authHeader = result.Object.headers.Authorization;
             Assert.AreEqual($"Bearer {id}", authHeader);
         }
         [Test]
@@ -289,8 +290,8 @@ namespace Dominisoft.Nokates.Common.Tests.Infrastructure.Helpers
             HttpHelper.SetToken(id.ToString());
             var body = new { IsTestObject = true };
             var result = HttpHelper.Delete(EchoUrl, body);
-            Assert.IsTrue(result.Contains("\"IsTestObject\": true"));
-            Assert.IsTrue(result.Contains($"\"Authorization\": \"Bearer {id}\""));
+            Assert.IsTrue(result.Message.Contains("\"IsTestObject\": true"));
+            Assert.IsTrue(result.Message.Contains($"\"Authorization\": \"Bearer {id}\""));
         }
         #endregion
 
