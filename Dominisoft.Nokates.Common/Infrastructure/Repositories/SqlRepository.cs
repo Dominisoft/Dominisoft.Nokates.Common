@@ -60,6 +60,6 @@ namespace Dominisoft.Nokates.Common.Infrastructure.Repositories
         }
 
         public bool Delete(TEntity entity)
-            => base.Delete(entity)>0;
+            => base.Delete(entity.Id)>0;
     }
 }
