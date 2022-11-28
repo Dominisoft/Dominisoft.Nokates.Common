@@ -14,9 +14,11 @@ namespace Dominisoft.Nokates.Common.Infrastructure.Configuration
     {
         public static string Token => _token ?? SetToken();
         private static string _token;
-        public static string JsonConfig { get; private set; }
-        public static Dictionary<string, string> Values { get; private set; }
+        public static string JsonConfig { get; private set; } = "{}";
+        public static Dictionary<string, string> Values { get; private set; } = new Dictionary<string, string>();
 
+        public static void SetValues(Dictionary<string, string> values)
+            => Values = values;
         public static bool TryGetValue<TValue>(out TValue value, string variableName) where TValue : new()
         {
             var contains = TryGetValue(out var str, variableName);
@@ -65,8 +67,14 @@ namespace Dominisoft.Nokates.Common.Infrastructure.Configuration
         }
         private static void GetConfig(string url)
         {
-            JsonConfig = HttpHelper.Get(url, string.Empty);
-            Values = JsonConvert.DeserializeObject<Dictionary<string, string>>(JsonConfig);
+            var response = HttpHelper.Get<Dictionary<string, string>>(url, string.Empty);
+
+            if (response.IsError)
+            {
+                throw new Exception($"Unable to get Configuration: {response.Message}");
+            }
+
+            Values = response.Object;
         }
 
 

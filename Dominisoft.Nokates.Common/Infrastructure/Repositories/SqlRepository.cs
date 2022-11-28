@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Dominisoft.Nokates.Common.Infrastructure.Extensions;
 using Dominisoft.Nokates.Common.Infrastructure.Helpers;
+using Dominisoft.Nokates.Common.Infrastructure.RepositoryConnections;
 using Dominisoft.Nokates.Common.Models;
 using RepoDb;
 
@@ -27,17 +28,28 @@ namespace Dominisoft.Nokates.Common.Infrastructure.Repositories
         {
             _tableName = new TEntity().GetTableName();
         }
+        public SqlRepository(IConnectionString connectionStringProvider) : base(connectionStringProvider.GetConnectionString())
+        {
+            _tableName = new TEntity().GetTableName();
+        }
+
 
 
         public TEntity Create(TEntity entity)
         {
+            ClearCache();
             var id =(int) Insert(entity);
             if (id > 0) return Get(id);
-            else return new TEntity();
+            else return null;
         }
 
         public TEntity Update(TEntity entity)
-            => Update(entity);
+        {
+            ClearCache();
+            var rows = base.Update(entity);
+            if (rows > 0) return Get(entity.Id);
+            else return null;
+        }
 
         public TEntity Get(int Id)
             => Query(Id, cacheKey: $"{typeof(TEntity).Name}-{Id}").FirstOrDefault();
@@ -60,6 +72,15 @@ namespace Dominisoft.Nokates.Common.Infrastructure.Repositories
         }
 
         public bool Delete(TEntity entity)
-            => base.Delete(entity.Id)>0;
+        {
+            ClearCache();
+            return base.Delete(entity.Id) > 0;
+        }
+
+        private void ClearCache()
+        {
+            Cache.Clear();
+        }
+
     }
 }

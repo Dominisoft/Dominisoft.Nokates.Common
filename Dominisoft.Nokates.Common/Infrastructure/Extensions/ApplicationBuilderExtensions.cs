@@ -23,23 +23,9 @@ namespace Dominisoft.Nokates.Common.Infrastructure.Extensions
             app.UseMiddleware<CustomExceptionMiddleware>();
             app.UseMiddleware<AuthorizationMiddleware>();
 
-            SetupRepoDb();
-
             return app;
         }
 
-        private static void SetupRepoDb()
-        {
-            SqlServerBootstrap.Initialize();
-
-            var dbSetting = new SqlServerDbSetting();
-
-            DbSettingMapper
-                .Add<SqlConnection>(dbSetting, true);
-            DbHelperMapper
-                .Add<SqlConnection>(new SqlServerDbHelper(), true);
-            StatementBuilderMapper
-                .Add<SqlConnection>(new SqlServerStatementBuilder(dbSetting), true);
-        }
+        
     }
 }

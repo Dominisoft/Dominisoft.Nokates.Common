@@ -26,7 +26,7 @@ namespace Dominisoft.Nokates.Common.Infrastructure.Client
   };
             var response = HttpHelper.Post(_authenticationUrl, values, string.Empty);
 
-            return response?.Split('.').Length != 3 ? null : response.Trim('"');
+            return response?.Message?.Split('.').Length != 3 ? null : response.Message.Trim('"');
         }
     }
 }
