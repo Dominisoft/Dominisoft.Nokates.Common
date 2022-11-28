@@ -81,5 +81,6 @@ namespace Dominisoft.Nokates.Common.Infrastructure.Repositories
         {
             Cache.Clear();
         }
+
     }
 }
