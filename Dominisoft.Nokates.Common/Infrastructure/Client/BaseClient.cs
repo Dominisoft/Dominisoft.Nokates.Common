@@ -11,6 +11,13 @@ namespace Dominisoft.Nokates.Common.Infrastructure.Client
         RestResponse Delete(TEntity entity);
         RestResponse<TEntity> Get(int id);
         RestResponse<List<TEntity>> GetAll();
+
+        RestResponse<TEntity> Create(TEntity entity,string token);
+        RestResponse<TEntity> Update(TEntity entity, string token);
+        RestResponse Delete(TEntity entity, string token);
+        RestResponse<TEntity> Get(int id, string token);
+        RestResponse<List<TEntity>> GetAll(string token);
+
     }
     public class BaseClient<TEntity> : IBaseClient<TEntity> where TEntity : Entity 
     {
@@ -23,7 +30,7 @@ namespace Dominisoft.Nokates.Common.Infrastructure.Client
             => HttpHelper.Post<TEntity>($"{BaseUrl}/Update", entity);
 
         public RestResponse Delete(TEntity entity)
-        => HttpHelper.Post($"{BaseUrl}/Delete",entity);
+            => HttpHelper.Post($"{BaseUrl}/Delete", entity);
         public RestResponse<TEntity> Get(int id)
             => HttpHelper.Get<TEntity>($"{BaseUrl}/{id}");
 
@@ -31,6 +38,26 @@ namespace Dominisoft.Nokates.Common.Infrastructure.Client
         {
 
             var result = HttpHelper.Get<List<TEntity>>($"{BaseUrl}/all");
+
+            return result;
+
+        }
+
+        public RestResponse<TEntity> Create(TEntity entity,string token)
+            => HttpHelper.Post<TEntity>($"{BaseUrl}/Create", entity,token);
+
+        public RestResponse<TEntity> Update(TEntity entity, string token)
+            => HttpHelper.Post<TEntity>($"{BaseUrl}/Update", entity, token);
+
+        public RestResponse Delete(TEntity entity, string token)
+            => HttpHelper.Post($"{BaseUrl}/Delete", entity, token);
+        public RestResponse<TEntity> Get(int id, string token)
+            => HttpHelper.Get<TEntity>($"{BaseUrl}/{id}", token);
+
+        public RestResponse<List<TEntity>> GetAll( string token)
+        {
+
+            var result = HttpHelper.Get<List<TEntity>>($"{BaseUrl}/all", token);
 
             return result;
 
